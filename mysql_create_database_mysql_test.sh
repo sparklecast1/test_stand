@@ -1,12 +1,12 @@
 #!/bin/bash
 
-docker exec -i mysql_test mysql -p123456Aa -e "
+docker exec -i mysql mysql -p123456Aa -e "
 DROP DATABASE IF EXISTS test;
 CREATE DATABASE test;
 """
-docker exec -i mysql_test mysql -p123456Aa --database=test  < countries_persons_tables_2012-11-28.sql
+docker exec -i mysql mysql -p123456Aa --database=test  < countries_persons_tables_2012-11-28.sql
 
-docker exec -i mysql_test mysql -p123456Aa --database=test -e "
+docker exec -i mysql mysql -p123456Aa --database=test -e "
 
 CREATE TABLE search (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,

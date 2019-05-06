@@ -1,8 +1,7 @@
 from elasticsearch import Elasticsearch
 import requests
-
-#res = requests.get('http://localhost:9200')
-#print(res.content)
+import logging
+import json
 
 #connect to our cluster
 #while r.status_code == 200:
@@ -11,13 +10,13 @@ import requests
     #es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
 def connect_elasticsearch():
-    es = None
-    es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-    if es.ping():
+    _es = None
+    _es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+    if _es.ping():
        print("Connect")
     else:
        print("it don't connected!")
-
+    return _es
 
 def create_index(es_object, index_name='search'):
     created = False
@@ -34,6 +33,9 @@ def create_index(es_object, index_name='search'):
                     "id": {
                         "type": "integer"
                     },
+                    "id_user": {
+                        "type": "integer"
+                    },
                     "text": {
                         "type": "text"
                     },
@@ -42,10 +44,12 @@ def create_index(es_object, index_name='search'):
         }
     }
     try:
-       if not es_object.indices.exists(index_name):
+        if not es_object.indices.exists(index_name):
             # Ignore 400 means to ignore "Index Already Exist" error.
             es_object.indices.create(index=index_name, ignore=400, body=settings)
             print('Created Index')
+        else:
+            print('Failed creation')
         created = True
     except Exception as ex:
         print(str(ex))
@@ -56,9 +60,26 @@ def create_index(es_object, index_name='search'):
 def store_record(elastic_object, index_name, record):
     try:
         outcome = elastic_object.index(index=index_name, doc_type='search', body=record)
+        print('Importing succesfull')
     except Exception as ex:
         print('Error in indexing data')
         print(str(ex))
+        
+def search(es_object, index_name, search):
+    res = es_object.search(index=index_name, body=search)
 
-
-#Connect_elasticsearch();
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.ERROR)
+    es = connect_elasticsearch()
+    create_index(es, 'search')
+    data = {
+       'user_id': '1',
+       'test': 'test'
+    }
+    store_record(es, 'search', data)
+    #if es is not None:
+    search_object = {'query': {'match': {'iser_id': '1'}}}
+    se = search(es, 'search', json.dumps(search_object))
+    print(se)
+        
+    
