@@ -43,7 +43,7 @@ CREATE PROCEDURE InsertRand(IN NumRows INT, IN MinVal INT, IN MaxVal INT)
     END$$
 DELIMITER ;
 
-CALL InsertRand(1000, 12345, 98765);
+CALL InsertRand(100000, 12345, 98765);
 
 "
 
